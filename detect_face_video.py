@@ -5,8 +5,10 @@ face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 # To capture video from webcam. 
 cap = cv2.VideoCapture(0)
-# To use a video file as input 
-# cap = cv2.VideoCapture('filename.mp4')
+
+init_size = 0
+init_x = -1
+init_y = -1
 
 while True:
     # Read the frame
@@ -20,7 +22,18 @@ while True:
 
     # Draw the rectangle around each face
     for (x, y, w, h) in faces:
-        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        if init_size == 0:
+            init_size = w*h
+        if init_x < 0 or init_y < 0:
+            init_x = x
+            init_y = y
+        if w*h > init_size*1.2:
+            cv2.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 2)
+        elif x < init_x*0.8 or x > init_x*1.2 or y < init_y*0.8 or y > init_y*1.2:
+            cv2.rectangle(img, (x, y), (x+w, y+h), (0, 0, 255), 2)
+        else:
+            cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        #print(init_x, x)
 
     # Display
     cv2.imshow('img', img)
